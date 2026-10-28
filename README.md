@@ -2,7 +2,7 @@
 
 Мэдээллийн Системийн Менежментийн тэнхимийн дижитал музей. Internet Programming, Гэрийн даалгавар №1.
 
-**Demo:** https://ТАНЫ-ТӨСӨЛ.vercel.app  ·  **Бүтээлч шийдэл:** ISM Time Machine (`/timeline`)
+**Demo:** ism-digital-museum-sable.vercel.app  ·  **Бүтээлч шийдэл:** ISM Time Machine (`/timeline`)
 
 ## Технологи
 React 18 + Vite, React Router, Supabase (Auth, PostgreSQL, Storage, RLS), Vercel.
