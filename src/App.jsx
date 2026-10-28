@@ -1,11 +1,19 @@
-import { Routes, Route, NavLink, Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import {
+  Routes,
+  Route,
+  NavLink,
+  Link,
+  useNavigate,
+  useLocation,
+} from 'react-router-dom'
 import { useAuth } from './lib/auth.jsx'
 import { supabase } from './lib/supabase'
 import Home from './pages/Home.jsx'
 import Exhibits from './pages/Exhibits.jsx'
 import ExhibitDetail from './pages/ExhibitDetail.jsx'
-import ExhibitForm from './pages/ExhibitForm.jsx'
-import { Teachers, Events, EventDetail } from './pages/Lists.jsx'
+import Dashboard from './pages/Dashboard.jsx'
+import { Teachers, Events } from './pages/Lists.jsx'
 import Timeline from './pages/Timeline.jsx'
 import Login from './pages/Login.jsx'
 
@@ -18,33 +26,49 @@ function Protected({ children }) {
 export default function App() {
   const { user } = useAuth()
   const nav = useNavigate()
+  const { pathname } = useLocation()
+  const [q, setQ] = useState('')
   const logout = async () => {
     await supabase.auth.signOut()
     nav('/')
   }
+  const search = (e) => {
+    e.preventDefault()
+    nav(`/exhibits?q=${encodeURIComponent(q)}`)
+  }
 
   return (
     <>
-      <header className="top">
-        <Link to="/" className="brand">
-          ISM Digital Museum
-        </Link>
-        <nav>
-          <NavLink to="/exhibits">Үзмэр</NavLink>
-          <NavLink to="/teachers">Багш нар</NavLink>
-          <NavLink to="/events">Арга хэмжээ</NavLink>
-          <NavLink to="/timeline">Time Machine</NavLink>
-        </nav>
-        <div className="acct">
+      <div className="util">
+        <div className="wrap">
+          <b>МСМ · Тэнхим</b>
+          <form className="sbox" onSubmit={search}>
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Үзмэр хайх.."
+              aria-label="Үзмэр хайх"
+            />
+            <button aria-label="Хайх">⌕</button>
+          </form>
+        </div>
+      </div>
+      <header className="nav">
+        <div className="wrap">
+          <Link to="/" className="brand">
+            ISM<i>.</i>MUSEUM
+          </Link>
+          <nav>
+            <NavLink to="/exhibits">Үзэсгэлэн</NavLink>
+            <NavLink to="/timeline">Time Machine</NavLink>
+            <NavLink to="/teachers">Багш нар</NavLink>
+            <NavLink to="/events">Арга хэмжээ</NavLink>
+            <NavLink to="/my">Миний бүтээл</NavLink>
+          </nav>
           {user ? (
-            <>
-              <Link className="btn" to="/exhibits/new">
-                Бүтээл нэмэх
-              </Link>
-              <button className="btn ghost" onClick={logout}>
-                Гарах
-              </button>
-            </>
+            <button className="btn" onClick={logout}>
+              Гарах
+            </button>
           ) : (
             <Link className="btn" to="/login">
               Нэвтрэх
@@ -52,37 +76,31 @@ export default function App() {
           )}
         </div>
       </header>
-      <main>
+      <main className={pathname === '/login' ? '' : 'wrap'}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/exhibits" element={<Exhibits />} />
-          <Route
-            path="/exhibits/new"
-            element={
-              <Protected>
-                <ExhibitForm />
-              </Protected>
-            }
-          />
           <Route path="/exhibits/:id" element={<ExhibitDetail />} />
           <Route
-            path="/exhibits/:id/edit"
+            path="/my"
             element={
               <Protected>
-                <ExhibitForm />
+                <Dashboard />
               </Protected>
             }
           />
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/events" element={<Events />} />
-          <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<p className="note">Хуудас олдсонгүй.</p>} />
         </Routes>
       </main>
       <footer className="foot">
-        Мэдээллийн Системийн Менежментийн Тэнхим · Internet Programming
+        <div className="wrap">
+          <b>ISM DIGITAL MUSEUM</b>
+          <span>Мэдээллийн Системийн Менежментийн Тэнхим</span>
+        </div>
       </footer>
     </>
   )

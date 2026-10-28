@@ -1,48 +1,42 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import useLoad from '../lib/useLoad'
+import { useTimelineItems } from '../lib/timeline'
 
-// ISM Time Machine: арга хэмжээ + үзмэрийг он цагийн дарааллаар нэг шугамд харуулна
+// ISM Time Machine: слайдер/жилээр сонгоход тухайн оны арга хэмжээ, бүтээлүүд харагдана
 export default function Timeline() {
-  const [type, setType] = useState('all')
-  const [asc, setAsc] = useState(false)
-  const ev = useLoad(() => supabase.from('events').select('id,title,event_date,description'), [])
-  const ex = useLoad(() => supabase.from('exhibits').select('id,title,description,year_created').eq('status', 'published'), [])
-
-  const groups = useMemo(() => {
-    const items = [
-      ...(ev.data ?? []).map((e) => ({ kind: 'event', id: e.id, year: Number(e.event_date.slice(0, 4)), title: e.title, text: e.description, to: `/events/${e.id}` })),
-      ...(ex.data ?? []).map((e) => ({ kind: 'exhibit', id: e.id, year: e.year_created, title: e.title, text: e.description, to: `/exhibits/${e.id}` })),
-    ].filter((i) => type === 'all' || i.kind === type)
-    const by = {}
-    items.forEach((i) => (by[i.year] ??= []).push(i))
-    return Object.entries(by).sort((a, b) => (asc ? a[0] - b[0] : b[0] - a[0]))
-  }, [ev.data, ex.data, type, asc])
+  const { items, loading } = useTimelineItems()
+  const [idx, setIdx] = useState(null)
+  const years = [...new Set(items.map((i) => i.year))].sort((a, b) => a - b)
+  const i = Math.min(idx ?? years.length - 1, years.length - 1)
+  const year = years[i]
+  const cur = items.filter((x) => x.year === year)
+  const lead = cur.find((x) => x.image) ?? cur[0]
 
   return (
     <>
-      <h1>ISM Time Machine</h1>
-      <div className="filters">
-        {[['all', 'Бүгд'], ['event', 'Арга хэмжээ'], ['exhibit', 'Бүтээл']].map(([k, l]) => (
-          <button key={k} className={`btn ${type === k ? '' : 'ghost'}`} onClick={() => setType(k)}>{l}</button>
-        ))}
-        <button className="btn ghost" onClick={() => setAsc(!asc)}>{asc ? 'Эртнээс нь' : 'Сүүлийнхээс нь'}</button>
-      </div>
-      {!ev.loading && !ex.loading && groups.length === 0 && <p className="note">Энэ шүүлтүүрт тохирох үйл явдал алга.</p>}
-      <ol className="tl">
-        {groups.map(([year, items]) => (
-          <li key={year}>
-            <span className="yr">{year}</span>
-            {items.map((i) => (
-              <Link key={i.kind + i.id} to={i.to} className="tl-item">
-                <b>{i.title}</b> <small>{i.kind === 'event' ? 'Арга хэмжээ' : 'Бүтээл'}</small>
-                <p>{(i.text ?? '').slice(0, 140)}</p>
+      <div className="pagehead"><p className="eyebrow">ISM Time Machine</p><h1>Цаг хугацаагаар аялах</h1></div>
+      {!loading && years.length === 0 && <p className="note">Түүхэн мэдээлэл хараахан нэмэгдээгүй байна. Үзмэр эсвэл арга хэмжээ нэмсний дараа энд харагдана.</p>}
+      {lead && (
+        <>
+          <div className={`tm ${lead.image ? 'img' : ''}`} style={lead.image ? { backgroundImage: `url(${lead.image})` } : undefined}>
+            <div><div className="yr">{year}</div><h2>{lead.title}</h2><p>{(lead.text ?? '').slice(0, 160)}</p></div>
+          </div>
+          <div className="track">
+            {years.map((y, k) => <button key={y} className={k === i ? 'on' : ''} onClick={() => setIdx(k)}><i />{y}</button>)}
+          </div>
+          {years.length > 1 && <input type="range" min="0" max={years.length - 1} value={i} onChange={(e) => setIdx(Number(e.target.value))} aria-label="Он сонгох" />}
+          <h2>{year} онд</h2>
+          <div className="grid3">
+            {cur.map((x) => (
+              <Link key={x.kind + x.id} to={x.to} className="xcard">
+                <p className="eyebrow">{x.kind === 'event' ? 'Арга хэмжээ' : 'Бүтээл'}</p>
+                <h3>{x.title}</h3>
+                <p className="muted">{(x.text ?? '').slice(0, 120)}</p>
               </Link>
             ))}
-          </li>
-        ))}
-      </ol>
+          </div>
+        </>
+      )}
     </>
   )
 }
