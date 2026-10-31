@@ -1,57 +1,172 @@
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import useLoad from '../lib/useLoad'
-import { useTimelineItems } from '../lib/timeline'
 import Status from '../components/Status.jsx'
 import ExhibitCard from '../components/ExhibitCard.jsx'
+import Carousel from '../components/Carousel.jsx'
 
-const FOUNDED = 1993 // тэнхим байгуулагдсан он — өөрийн мэдээллээр солино
+const TILES = [
+  ['/exhibits', 'Үзэсгэлэн', 'Оюутнуудын бүтээл, төслүүдийг үзэх'],
+  ['/teachers', 'Багш нар', 'Тэнхимийн багш нартай танилцах'],
+  ['/events', 'Арга хэмжээ', 'Өдөрлөг, уулзалтын зургууд'],
+  ['/timeline', 'Time Machine', 'Тэнхимийн түүхийг он цагаар үзэх'],
+]
+
+// Өгөгдөл байхгүй үед харуулах локал зургууд (public/images/)
+const FALLBACK = [
+  {
+    key: 'f1',
+    image: '/images/dashboard.jpg',
+    title: 'Оюутны бүтээлүүд',
+    to: '/exhibits',
+  },
+  {
+    key: 'f2',
+    image: '/images/compaq.jpg',
+    title: 'Тэнхимийн түүх',
+    to: '/timeline',
+  },
+  {
+    key: 'f3',
+    image: '/images/ecotrack.jpg',
+    title: 'Арга хэмжээ',
+    to: '/events',
+  },
+]
 
 export default function Home() {
-  const latest = useLoad(() =>
-    supabase.from('exhibits').select('*, exhibition_categories(name), profiles(display_name)')
-      .eq('status', 'published').order('created_at', { ascending: false }).limit(3), [])
+  const latest = useLoad(
+    () =>
+      supabase
+        .from('exhibits')
+        .select('*, exhibition_categories(name), profiles(display_name)')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(3),
+    [],
+  )
   const counts = useLoad(async () => {
-    const c = (t) => supabase.from(t).select('*', { count: 'exact', head: true })
-    const [a, b, d] = await Promise.all([c('exhibits'), c('teachers'), c('events')])
-    return { data: { ex: a.count, te: b.count, ev: d.count }, error: a.error || b.error || d.error }
+    const c = (t) =>
+      supabase.from(t).select('*', { count: 'exact', head: true })
+    const [a, b, d] = await Promise.all([
+      c('exhibits'),
+      c('teachers'),
+      c('events'),
+    ])
+    return {
+      data: { ex: a.count, te: b.count, ev: d.count },
+      error: a.error || b.error || d.error,
+    }
   }, [])
-  const { items } = useTimelineItems()
-  const years = [...new Map(items.sort((a, b) => a.year - b.year).map((i) => [i.year, i])).values()].slice(0, 8)
-  const hero = latest.data?.find((e) => e.image_url)
+  const years = useLoad(
+    () =>
+      supabase
+        .from('timeline_events')
+        .select('id,year,title')
+        .order('year')
+        .limit(8),
+    [],
+  )
+  const evs = useLoad(
+    () =>
+      supabase
+        .from('events')
+        .select('id,title,cover_image_url')
+        .not('cover_image_url', 'is', null)
+        .order('event_date', { ascending: false })
+        .limit(3),
+    [],
+  )
+  const slides = [
+    ...(latest.data ?? [])
+      .filter((e) => e.image_url)
+      .map((e) => ({
+        key: 'x' + e.id,
+        image: e.image_url,
+        title: e.title,
+        to: `/exhibits/${e.id}`,
+      })),
+    ...(evs.data ?? []).map((e) => ({
+      key: 'e' + e.id,
+      image: e.cover_image_url,
+      title: e.title,
+      to: `/events/${e.id}`,
+    })),
+  ]
+  const loaded = !latest.loading && !evs.loading
+  const list =
+    loaded || slides.length
+      ? [...slides, ...FALLBACK.slice(0, Math.max(0, 3 - slides.length))]
+      : []
 
   return (
     <>
       <section className="hero">
         <div>
-          <span className="tag">МСМ ТЭНХИМ · EST. {FOUNDED}</span>
-          <h1>Тэнхимийн түүх <span>нэг дор!</span></h1>
-          <p>Багш нар · Арга хэмжээ · Оюутны бүтээл</p>
+          <h1>
+            Тавтай морил! <span>Тэнхимийн түүх нэг дор.</span>
+          </h1>
+          <p>
+            Энд тэнхимийн багш нар, түүхэн үйл явдал, арга хэмжээ, оюутнуудын
+            бүтээлийг нэг дороос үзнэ.
+          </p>
           <div className="row">
-            <Link className="btn yellow" to="/exhibits">Үзэсгэлэн үзэх</Link>
-            <Link className="btn line" to="/timeline">Time Machine →</Link>
+            <Link className="btn" to="/exhibits">
+              Үзэсгэлэн үзэх
+            </Link>
+            <Link className="btn line" to="/timeline">
+              Time Machine →
+            </Link>
           </div>
         </div>
-        {hero && <img src={hero.image_url} alt={hero.title} />}
+        <Carousel slides={list} />
       </section>
       <div className="stats">
-        <div><b>{counts.data?.ex ?? '–'}</b>Үзмэр</div>
-        <div><b>{counts.data?.te ?? '–'}</b>Багш</div>
-        <div><b>{new Date().getFullYear() - FOUNDED}</b>Жил</div>
-        <div><b>{counts.data?.ev ?? '–'}</b>Арга хэмжээ</div>
+        <div>
+          <b>{counts.data?.ex ?? '–'}</b>Үзмэр
+        </div>
+        <div>
+          <b>{counts.data?.te ?? '–'}</b>Багш
+        </div>
+        <div>
+          <b>{counts.data?.ev ?? '–'}</b>Арга хэмжээ
+        </div>
       </div>
-      <div className="head"><div><p className="eyebrow" style={{ marginTop: '3rem' }}>Онцлох</p><h2 style={{ margin: 0 }}>Шинэ үзмэрүүд</h2></div><Link to="/exhibits">Бүгдийг үзэх →</Link></div>
-      <Status s={latest} empty="Одоогоор үзмэр байхгүй байна. Нэвтэрч эхний бүтээлээ нэмээрэй." />
-      <div className="feat" style={{ marginTop: '1.5rem' }}>
-        {latest.data?.[0] && <ExhibitCard e={latest.data[0]} big />}
-        <div className="side">{latest.data?.slice(1).map((e) => <ExhibitCard key={e.id} e={e} />)}</div>
+      <h2>Эндээс эхлээрэй</h2>
+      <div className="tiles">
+        {TILES.map(([to, t, d]) => (
+          <Link key={to} to={to} className="tile">
+            <b>{t}</b>
+            <span>{d}</span>
+          </Link>
+        ))}
       </div>
-      {years.length > 0 && (
+      <div className="head">
+        <h2>Шинэ үзмэрүүд</h2>
+        <Link to="/exhibits">Бүгдийг үзэх →</Link>
+      </div>
+      <Status
+        s={latest}
+        empty="Одоогоор үзмэр байхгүй байна. Нэвтэрч эхний бүтээлээ нэмээрэй."
+      />
+      <div className="grid3">
+        {latest.data?.map((e) => (
+          <ExhibitCard key={e.id} e={e} />
+        ))}
+      </div>
+      {years.data?.length > 0 && (
         <>
-          <p className="eyebrow" style={{ marginTop: '3.5rem' }}>ISM Time Machine</p>
-          <h2 style={{ margin: '0 0 1.2rem' }}>{new Date().getFullYear() - FOUNDED} жилийн аялал</h2>
+          <div className="head">
+            <h2>Time Machine</h2>
+            <Link to="/timeline">Бүгдийг үзэх →</Link>
+          </div>
           <div className="tl-strip">
-            {years.map((i) => <Link key={i.year} to="/timeline"><b>{i.year}</b>{i.title}</Link>)}
+            {years.data.map((t) => (
+              <Link key={t.id} to="/timeline">
+                <b>{t.year}</b>
+                {t.title}
+              </Link>
+            ))}
           </div>
         </>
       )}

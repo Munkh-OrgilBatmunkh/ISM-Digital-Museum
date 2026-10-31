@@ -1,42 +1,95 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useTimelineItems } from '../lib/timeline'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../lib/auth.jsx'
+import useLoad from '../lib/useLoad'
+import Status from '../components/Status.jsx'
+import EntityForm from '../components/EntityForm.jsx'
+import { AdminBar, duplicateRow, deleteRow } from '../components/AdminTools.jsx'
 
-// ISM Time Machine: слайдер/жилээр сонгоход тухайн оны арга хэмжээ, бүтээлүүд харагдана
+const FIELDS = [
+  { key: 'year', label: 'Он', type: 'number', required: true },
+  { key: 'title', label: 'Гарчиг', required: true },
+  { key: 'description', label: 'Товч тайлбар', type: 'textarea' },
+  { key: 'image_url', label: 'Зураг (заавал биш)', type: 'image' },
+]
+
+// ISM Time Machine: тэнхимийн түүхийн үйл явдлуудыг он цагийн дарааллаар харуулна
 export default function Timeline() {
-  const { items, loading } = useTimelineItems()
-  const [idx, setIdx] = useState(null)
-  const years = [...new Set(items.map((i) => i.year))].sort((a, b) => a - b)
-  const i = Math.min(idx ?? years.length - 1, years.length - 1)
-  const year = years[i]
-  const cur = items.filter((x) => x.year === year)
-  const lead = cur.find((x) => x.image) ?? cur[0]
+  const { isAdmin } = useAuth()
+  const [n, setN] = useState(0)
+  const [edit, setEdit] = useState(null)
+  const s = useLoad(
+    () =>
+      supabase
+        .from('timeline_events')
+        .select('*')
+        .order('year')
+        .order('created_at'),
+    [n],
+  )
+  const refresh = () => {
+    setEdit(null)
+    setN((x) => x + 1)
+  }
 
   return (
     <>
-      <div className="pagehead"><p className="eyebrow">ISM Time Machine</p><h1>Цаг хугацаагаар аялах</h1></div>
-      {!loading && years.length === 0 && <p className="note">Түүхэн мэдээлэл хараахан нэмэгдээгүй байна. Үзмэр эсвэл арга хэмжээ нэмсний дараа энд харагдана.</p>}
-      {lead && (
-        <>
-          <div className={`tm ${lead.image ? 'img' : ''}`} style={lead.image ? { backgroundImage: `url(${lead.image})` } : undefined}>
-            <div><div className="yr">{year}</div><h2>{lead.title}</h2><p>{(lead.text ?? '').slice(0, 160)}</p></div>
-          </div>
-          <div className="track">
-            {years.map((y, k) => <button key={y} className={k === i ? 'on' : ''} onClick={() => setIdx(k)}><i />{y}</button>)}
-          </div>
-          {years.length > 1 && <input type="range" min="0" max={years.length - 1} value={i} onChange={(e) => setIdx(Number(e.target.value))} aria-label="Он сонгох" />}
-          <h2>{year} онд</h2>
-          <div className="grid3">
-            {cur.map((x) => (
-              <Link key={x.kind + x.id} to={x.to} className="xcard">
-                <p className="eyebrow">{x.kind === 'event' ? 'Арга хэмжээ' : 'Бүтээл'}</p>
-                <h3>{x.title}</h3>
-                <p className="muted">{(x.text ?? '').slice(0, 120)}</p>
-              </Link>
-            ))}
-          </div>
-        </>
+      <div className="pagehead">
+        <p className="eyebrow">ISM Time Machine</p>
+        <h1>Тэнхимийн түүх</h1>
+        <p className="muted">
+          Тэнхимийн чухал үйл явдлуудыг он цагийн дарааллаар доош гүйлгэн
+          үзээрэй.
+        </p>
+        {isAdmin && (
+          <button className="btn" onClick={() => setEdit({})}>
+            + Үйл явдал нэмэх
+          </button>
+        )}
+      </div>
+      {edit && (
+        <EntityForm
+          key={edit.id ?? 'new'}
+          table="timeline_events"
+          title={edit.id ? 'Үйл явдал засах' : 'Шинэ үйл явдал'}
+          fields={FIELDS}
+          row={edit.id ? edit : null}
+          onDone={refresh}
+          onCancel={() => setEdit(null)}
+        />
       )}
+      <Status s={s} empty="Түүхэн үйл явдал хараахан нэмэгдээгүй байна." />
+      <ol className="tline">
+        {s.data?.map((t) => (
+          <li key={t.id}>
+            <span className="dot" />
+            <span className="yr">{t.year}</span>
+            <div className="tc">
+              {t.image_url && (
+                <img src={t.image_url} alt={t.title} loading="lazy" />
+              )}
+              <h3>{t.title}</h3>
+              {t.description && <p>{t.description}</p>}
+              {isAdmin && (
+                <AdminBar
+                  onEdit={() => setEdit(t)}
+                  onDuplicate={async () => {
+                    await duplicateRow('timeline_events', t, 'title')
+                    refresh()
+                  }}
+                  onDelete={async () =>
+                    (await deleteRow(
+                      'timeline_events',
+                      t.id,
+                      'Энэ үйл явдлыг',
+                    )) && refresh()
+                  }
+                />
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
     </>
   )
 }
