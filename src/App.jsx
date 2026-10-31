@@ -63,8 +63,8 @@ export default function App() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Үзмэр хайх.."
-              aria-label="Үзмэр хайх"
+              placeholder="Үзэгсгэлэн хайх"
+              aria-label="Үзэгсгэлэн хайх"
             />
             <button aria-label="Хайх">⌕</button>
           </form>

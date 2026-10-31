@@ -123,7 +123,7 @@ export default function Home() {
       </section>
       <div className="stats">
         <div>
-          <b>{counts.data?.ex ?? '–'}</b>Үзмэр
+          <b>{counts.data?.ex ?? '–'}</b>Үзэгсгэлэн
         </div>
         <div>
           <b>{counts.data?.te ?? '–'}</b>Багш
@@ -142,12 +142,12 @@ export default function Home() {
         ))}
       </div>
       <div className="head">
-        <h2>Шинэ үзмэрүүд</h2>
+        <h2>Шинэ үзэгсгэлэнгүүд</h2>
         <Link to="/exhibits">Бүгдийг үзэх →</Link>
       </div>
       <Status
         s={latest}
-        empty="Одоогоор үзмэр байхгүй байна. Нэвтэрч эхний бүтээлээ нэмээрэй."
+        empty="Одоогоор үзэгсгэлэн байхгүй байна. Нэвтэрч эхний бүтээлээ нэмээрэй."
       />
       <div className="grid3">
         {latest.data?.map((e) => (
