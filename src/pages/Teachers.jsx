@@ -15,7 +15,12 @@ const RANKS = [
 ]
 const FIELDS = [
   { key: 'name', label: 'Нэр', required: true },
-  { key: 'position', label: 'Цол', list: RANKS, required: true },
+  {
+    key: 'position',
+    label: 'Цол (жишээ: Профессор, Ахлах багш)',
+    list: RANKS,
+    required: true,
+  },
   { key: 'photo_url', label: 'Зураг', type: 'image' },
 ]
 
@@ -38,7 +43,7 @@ export default function Teachers() {
         <p className="eyebrow">Бидний бахархал</p>
         <h1>Тэнхимийн багш нар</h1>
         <p className="muted">
-          Мэдээллийн системийн менежментийн тэнхимийн багш нартай танилцаарай.
+          Манай тэнхимд хичээл заадаг багш нартай танилцаарай.
         </p>
         {isAdmin && (
           <button className="btn" onClick={() => setEdit({})}>

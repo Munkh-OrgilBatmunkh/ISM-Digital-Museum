@@ -1,58 +1,111 @@
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth.jsx'
 import useLoad from '../lib/useLoad'
 import Status from '../components/Status.jsx'
+import EntityForm from '../components/EntityForm.jsx'
+import { deleteRow } from '../components/AdminTools.jsx'
 
-export default function ExhibitDetail() {
+const FIELDS = [
+  { key: 'image_url', label: 'Зураг', type: 'image', required: true },
+  { key: 'caption', label: 'Тайлбар (заавал биш)' },
+]
+
+export default function EventDetail() {
   const { id } = useParams()
-  const { user, isAdmin } = useAuth()
-  const nav = useNavigate()
-  const s = useLoad(() =>
-    supabase.from('exhibits').select('*, exhibition_categories(name), profiles(display_name)').eq('id', id).maybeSingle(), [id])
-  const e = s.data
-  const canEdit = user && e && (user.id === e.creator_id || isAdmin)
+  const { isAdmin } = useAuth()
+  const [n, setN] = useState(0)
+  const [adding, setAdding] = useState(false)
+  const ev = useLoad(
+    () => supabase.from('events').select('*').eq('id', id).maybeSingle(),
+    [id],
+  )
+  const ph = useLoad(
+    () => supabase.from('event_photos').select('*').eq('event_id', id),
+    [id, n],
+  )
 
-  const remove = async () => {
-    if (!confirm('Энэ үзмэрийг устгах уу?')) return
-    const { error } = await supabase.from('exhibits').delete().eq('id', id)
-    error ? alert(error.message) : nav('/exhibits')
-  }
-  const hide = async () => {
-    const { error } = await supabase.from('exhibits').update({ status: 'hidden' }).eq('id', id)
-    error ? alert(error.message) : nav('/exhibits')
-  }
-
-  if (s.loading || s.error) return <Status s={s} />
-  if (!e) return <p className="note">Үзмэр олдсонгүй.</p>
+  if (ev.loading || ev.error) return <Status s={ev} />
+  if (!ev.data) return <p className="note">Арга хэмжээ олдсонгүй.</p>
+  const e = ev.data
   return (
     <>
-      <p style={{ marginTop: '2rem' }}><Link to="/exhibits" className="muted" style={{ textDecoration: 'none' }}>← Үзэсгэлэн рүү буцах</Link></p>
+      <p style={{ marginTop: '2rem' }}>
+        <Link to="/events" className="muted" style={{ textDecoration: 'none' }}>
+          ← Арга хэмжээ рүү буцах
+        </Link>
+      </p>
       <article className="detail">
-        <div className="frame">{e.image_url ? <img src={e.image_url} alt={e.title} /> : <div className="xthumb"><div className="ph">ISM</div></div>}</div>
-        <div>
-          <p className="eyebrow">Үзмэр</p>
-          <h1>{e.title}</h1>
-          <p className="lead">{e.description}</p>
-          <dl className="rows">
-            <div><dt>Зохиогч</dt><dd>{e.profiles?.display_name ?? 'Тодорхойгүй'}</dd></div>
-            <div><dt>Он</dt><dd>{e.year_created}</dd></div>
-            <div><dt>Ангилал</dt><dd>{e.exhibition_categories?.name ?? 'Ангилалгүй'}</dd></div>
-            <div><dt>Технологи</dt><dd>{e.technology_stack}</dd></div>
-          </dl>
-          <div className="row">
-            {e.demo_url && <a className="btn" href={e.demo_url} target="_blank" rel="noreferrer">Demo үзэх</a>}
-            {e.github_url && <a className="btn ghost" href={e.github_url} target="_blank" rel="noreferrer">GitHub</a>}
-          </div>
-          {canEdit && (
-            <div className="row" style={{ marginTop: '1.2rem' }}>
-              <Link className="btn ghost" to={`/my?edit=${id}`}>Засах</Link>
-              <button className="btn ghost" style={{ color: 'var(--bad)' }} onClick={remove}>Устгах</button>
-              {isAdmin && <button className="btn ghost" onClick={hide}>Нуух</button>}
+        <div className="frame">
+          {e.cover_image_url ? (
+            <img src={e.cover_image_url} alt={e.title} />
+          ) : (
+            <div className="xthumb">
+              <div className="ph">ISM</div>
             </div>
           )}
         </div>
+        <div>
+          <p className="eyebrow">{e.event_date.replaceAll('-', '.')}</p>
+          <h1>{e.title}</h1>
+          <p className="lead">{e.description}</p>
+        </div>
       </article>
+      <div className="head">
+        <h2>Зургийн цомог</h2>
+        {isAdmin && (
+          <button className="btn" onClick={() => setAdding(true)}>
+            + Зураг нэмэх
+          </button>
+        )}
+      </div>
+      {adding && (
+        <EntityForm
+          table="event_photos"
+          title="Цомогт зураг нэмэх"
+          fields={FIELDS}
+          extra={{ event_id: id }}
+          onDone={() => {
+            setAdding(false)
+            setN(n + 1)
+          }}
+          onCancel={() => setAdding(false)}
+        />
+      )}
+      <Status
+        s={ph}
+        empty="Энэ арга хэмжээнд зураг хараахан нэмэгдээгүй байна."
+      />
+      <div className="gal">
+        {ph.data?.map((p) => (
+          <figure key={p.id}>
+            <a
+              href={p.image_url}
+              target="_blank"
+              rel="noreferrer"
+              title="Бүтэн хэмжээгээр нээх"
+            >
+              <img
+                src={p.image_url}
+                alt={p.caption ?? e.title}
+                loading="lazy"
+              />
+            </a>
+            {isAdmin && (
+              <button
+                className="x"
+                onClick={async () =>
+                  (await deleteRow('event_photos', p.id, 'Энэ зургийг')) &&
+                  setN(n + 1)
+                }
+              >
+                Устгах
+              </button>
+            )}
+          </figure>
+        ))}
+      </div>
     </>
   )
 }

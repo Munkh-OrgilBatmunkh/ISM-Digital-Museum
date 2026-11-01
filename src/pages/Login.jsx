@@ -3,7 +3,6 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth.jsx'
 
-// Supabase-ийн англи алдааг ойлгомжтой Монгол мессеж болгоно
 function explain(m = '') {
   const t = m.toLowerCase()
   if (t.includes('invalid login')) return 'И-мэйл эсвэл нууц үг буруу байна.'
@@ -30,10 +29,9 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
-  const [msg, setMsg] = useState(null) // { text, ok }
+  const [msg, setMsg] = useState(null)
   const [busy, setBusy] = useState(false)
 
-  // Нэвтэрсэн бол шууд буцаана (нэвтэрсний дараа ч энэ ажиллана)
   if (user) return <Navigate to={from} replace />
 
   const submit = async (e) => {

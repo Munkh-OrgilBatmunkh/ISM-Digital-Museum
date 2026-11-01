@@ -784,3 +784,164 @@ textarea {
     transition: none !important;
   }
 }
+
+/* Time Capsule */
+.meta {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 0.2rem 0;
+}
+.lgrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+.lcard {
+  display: block;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.2rem;
+  text-decoration: none;
+  height: 100%;
+}
+.lcard:hover {
+  border-color: var(--blue);
+}
+.lcard h3 {
+  margin: 0;
+}
+.lcard .snip {
+  color: var(--ink);
+  margin: 0.6rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-line;
+}
+.lcard .more {
+  color: var(--blue);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.letter {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 720px;
+  margin: 1.5rem auto;
+}
+.letter .body {
+  white-space: pre-wrap;
+  margin-top: 1.2rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+/* Багшийн зураг: толгой тасрахгүй, царай томорсон, жигд цагираг */
+.tcard {
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+.tcard:hover {
+  box-shadow: 0 8px 22px rgba(12, 31, 74, 0.1);
+  transform: translateY(-2px);
+}
+.tcard .xthumb {
+  width: 78%;
+  border: 4px solid #fff;
+  background: #e9eef8;
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 6px 16px rgba(12, 31, 74, 0.12);
+}
+.tcard .xthumb img {
+  object-position: 50% 6%;
+  transform: scale(1.12);
+  transform-origin: 50% 8%;
+  transition: transform 0.3s;
+}
+.tcard:hover .xthumb img {
+  transform: scale(1.18);
+}
+.nav .role {
+  color: var(--sky);
+  border-color: var(--sky);
+  font-size: 0.85rem;
+  padding: 0.15rem 0.8rem;
+}
+
+.car.empty {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  color: #c9d6f5;
+}
+
+/* Навбар нэг эгнээнд + зургийн цомог бүтэн зургаар */
+.nav .wrap {
+  max-width: 1440px;
+  flex-wrap: nowrap;
+  gap: 0.6rem 1.2rem;
+}
+.brand {
+  font-size: 1.3rem;
+  white-space: nowrap;
+}
+.nav nav {
+  flex-wrap: nowrap;
+  gap: 0.4rem 1rem;
+  min-width: 0;
+}
+.nav nav a {
+  white-space: nowrap;
+  font-size: 0.92rem;
+}
+.nav .sbox {
+  flex-shrink: 0;
+}
+.nav .sbox input {
+  width: 140px;
+}
+.nav .btn,
+.nav .role {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+@media (max-width: 1320px) {
+  .nav .sbox input {
+    width: 115px;
+  }
+  .nav nav {
+    gap: 0.4rem 0.85rem;
+  }
+}
+@media (max-width: 1120px) {
+  .nav .role {
+    display: none;
+  }
+}
+@media (max-width: 980px) {
+  .nav .wrap,
+  .nav nav {
+    flex-wrap: wrap;
+  }
+}
+.gal {
+  display: block;
+  columns: 250px;
+  column-gap: 0.8rem;
+}
+.gal figure {
+  break-inside: avoid;
+  margin: 0 0 0.8rem;
+}
+.gal img {
+  aspect-ratio: auto;
+  height: auto;
+  object-fit: contain;
+}

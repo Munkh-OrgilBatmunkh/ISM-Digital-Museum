@@ -38,7 +38,7 @@ export default function Events() {
   return (
     <>
       <div className="pagehead">
-        <p className="eyebrow">Манай тэнхимийн дурсамжууд</p>
+        <p className="eyebrow">Дурсамж</p>
         <h1>Өдөрлөг ба арга хэмжээ</h1>
         <p className="muted">Тэнхимд болсон арга хэмжээнүүд.</p>
         {isAdmin && (

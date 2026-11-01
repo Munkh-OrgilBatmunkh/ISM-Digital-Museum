@@ -14,6 +14,8 @@ import Home from './pages/Home.jsx'
 import Exhibits from './pages/Exhibits.jsx'
 import ExhibitDetail from './pages/ExhibitDetail.jsx'
 import Dashboard from './pages/Dashboard.jsx'
+import Capsule from './pages/Capsule.jsx'
+import CapsuleDetail from './pages/CapsuleDetail.jsx'
 import Teachers from './pages/Teachers.jsx'
 import Events from './pages/Events.jsx'
 import EventDetail from './pages/EventDetail.jsx'
@@ -32,7 +34,7 @@ function Protected({ children }) {
 }
 
 export default function App() {
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const nav = useNavigate()
   const { pathname } = useLocation()
   const [q, setQ] = useState('')
@@ -54,6 +56,7 @@ export default function App() {
           </Link>
           <nav>
             <NavLink to="/exhibits">Үзэсгэлэн</NavLink>
+            <NavLink to="/capsule">Time Capsule</NavLink>
             <NavLink to="/timeline">Time Machine</NavLink>
             <NavLink to="/teachers">Багш нар</NavLink>
             <NavLink to="/events">Арга хэмжээ</NavLink>
@@ -63,11 +66,14 @@ export default function App() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Үзэгсгэлэн хайх"
-              aria-label="Үзэгсгэлэн хайх"
+              placeholder="Хайх"
+              aria-label="Үзмэр хайх"
             />
             <button aria-label="Хайх">⌕</button>
           </form>
+          {user && (
+            <span className="role">{isAdmin ? 'Админ' : 'Бүтээгч'}</span>
+          )}
           {user ? (
             <button className="btn" onClick={logout}>
               Гарах
@@ -92,6 +98,8 @@ export default function App() {
               </Protected>
             }
           />
+          <Route path="/capsule" element={<Capsule />} />
+          <Route path="/capsule/:kind/:id" element={<CapsuleDetail />} />
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetail />} />

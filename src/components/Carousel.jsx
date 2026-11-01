@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-// Автоматаар сольж, зөөлөн бүдгэрч солигддог слайдер. Хулгана дээр очиход түр зогсоно.
-export default function Carousel({ slides, interval = 4500 }) {
+export default function Carousel({ slides, interval = 4500, emptyText = '' }) {
   const [i, setI] = useState(0)
   const [paused, setPaused] = useState(false)
   const n = slides.length
@@ -14,9 +13,8 @@ export default function Carousel({ slides, interval = 4500 }) {
     return () => clearInterval(t)
   }, [n, paused, interval, i])
 
-  if (!n) return <div className="car" />
+  if (!n) return <div className="car empty">{emptyText}</div>
   const go = (d) => setI(cur + d + n)
-  // Зөвхөн гараар (Tab) фокуслахад зогсооно; хулганаар товшсон товч автоматаар солигдохыг зогсоохгүй
   const kbFocus = (e) => {
     try {
       return e.target.matches(':focus-visible')

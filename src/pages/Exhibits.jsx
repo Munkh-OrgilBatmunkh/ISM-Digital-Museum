@@ -1,5 +1,4 @@
-import { useSearchParams } from 'react-router-dom'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth.jsx'
 import useLoad from '../lib/useLoad'
@@ -9,8 +8,9 @@ import ExhibitCard from '../components/ExhibitCard.jsx'
 export default function Exhibits() {
   const { user } = useAuth()
   const [sp, setSp] = useSearchParams()
-  const q = sp.get('q') ?? '',
+  const raw = sp.get('q') ?? '',
     cat = sp.get('cat') ?? ''
+  const q = raw.replace(/[,()*%]/g, ' ').trim()
   const set = (k, v) => {
     const n = new URLSearchParams(sp)
     v ? n.set(k, v) : n.delete(k)
@@ -27,10 +27,9 @@ export default function Exhibits() {
       .select('*, exhibition_categories(name), profiles(display_name)')
       .eq('status', 'published')
       .order('year_created', { ascending: false })
-    const t = q.replace(/[,()*%]/g, ' ').trim()
-    if (t)
+    if (q)
       r = r.or(
-        `title.ilike.*${t}*,technology_stack.ilike.*${t}*${/^\d{4}$/.test(t) ? `,year_created.eq.${t}` : ''}`,
+        `title.ilike.*${q}*,technology_stack.ilike.*${q}*${/^\d{4}$/.test(q) ? `,year_created.eq.${q}` : ''}`,
       )
     if (cat) r = r.eq('category_id', cat)
     return r
@@ -41,7 +40,9 @@ export default function Exhibits() {
       <div className="pagehead">
         <p className="eyebrow">Цуглуулга</p>
         <h1>Дижитал үзэсгэлэн</h1>
-        <p className="muted">Оюутнуудын бүтээсэн төсөл, судалгаа, үзмэрүүд.</p>
+        <p className="muted">
+          Оюутнуудын бүтээсэн төсөл, судалгаа, түүхэн үзэсгэлэнгүүд
+        </p>
         {user && (
           <Link className="btn" to="/my">
             + Бүтээл нэмэх
@@ -51,7 +52,7 @@ export default function Exhibits() {
       <div className="chips">
         <div className="sbox">
           <input
-            value={q}
+            value={raw}
             onChange={(e) => set('q', e.target.value)}
             placeholder="Нэр, он, технологиор хайх…"
             aria-label="Хайх"

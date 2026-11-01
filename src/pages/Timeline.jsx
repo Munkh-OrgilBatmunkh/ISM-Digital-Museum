@@ -13,7 +13,6 @@ const FIELDS = [
   { key: 'image_url', label: 'Зураг (заавал биш)', type: 'image' },
 ]
 
-// ISM Time Machine: тэнхимийн түүхийн үйл явдлуудыг он цагийн дарааллаар харуулна
 export default function Timeline() {
   const { isAdmin } = useAuth()
   const [n, setN] = useState(0)
