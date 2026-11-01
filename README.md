@@ -3,7 +3,7 @@
 Мэдээллийн Системийн Менежментийн тэнхимийн дижитал музей. Internet Programming, Гэрийн даалгавар №1.
 Бүтээлч санаа: **Digital Time Capsule** — ирээдүйн оюутнуудад зориулсан захиа, бүтээлийн түүх болон дурсамж хадгалах.
 
-**Demo:** ism-digital-museum-sable.vercel.app · **GitHub:** https://github.com/Munkh-OrgilBatmunkh/ISM-Digital-Museum
+**Demo:** https://ism-digital-museum-38zn7egja-oggybatmunkh-5444s-projects.vercel.app/ · **GitHub:** https://github.com/Munkh-OrgilBatmunkh/ISM-Digital-Museum
 
 ## Технологи
 React 18 + Vite, React Router, Supabase, Vercel.
