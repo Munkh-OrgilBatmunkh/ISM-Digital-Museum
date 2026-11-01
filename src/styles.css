@@ -391,7 +391,7 @@ textarea {
 .tiles {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
 }
 .tile {
   background: var(--soft);
@@ -460,10 +460,10 @@ textarea {
 .grid4 {
   display: grid;
   gap: 1.8rem 1.4rem;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr));
 }
 .grid4 {
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
 }
 .xcard {
   display: block;
@@ -794,7 +794,7 @@ textarea {
 .lgrid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
 }
 .lcard {
   display: block;
@@ -912,25 +912,6 @@ textarea {
   white-space: nowrap;
   flex-shrink: 0;
 }
-@media (max-width: 1320px) {
-  .nav .sbox input {
-    width: 115px;
-  }
-  .nav nav {
-    gap: 0.4rem 0.85rem;
-  }
-}
-@media (max-width: 1120px) {
-  .nav .role {
-    display: none;
-  }
-}
-@media (max-width: 980px) {
-  .nav .wrap,
-  .nav nav {
-    flex-wrap: wrap;
-  }
-}
 .gal {
   display: block;
   columns: 250px;
@@ -944,4 +925,207 @@ textarea {
   aspect-ratio: auto;
   height: auto;
   object-fit: contain;
+}
+
+/* ===== Responsive ===== */
+img {
+  max-width: 100%;
+}
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex: 1;
+  min-width: 0;
+}
+.burger {
+  display: none;
+  margin-left: auto;
+  width: 44px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+@media (max-width: 1320px) {
+  .nav .sbox input {
+    width: 115px;
+  }
+  .nav nav {
+    gap: 0.4rem 0.85rem;
+  }
+}
+@media (max-width: 1230px) {
+  .nav .role {
+    display: none;
+  }
+}
+/* таблет, гар утас: ☰ цэс */
+@media (max-width: 1180px) {
+  .burger {
+    display: block;
+  }
+  .nav .wrap {
+    flex-wrap: wrap;
+  }
+  .menu {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.9rem;
+    padding: 0.4rem 0 0.7rem;
+  }
+  .menu.open {
+    display: flex;
+  }
+  .nav nav {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0;
+    align-items: stretch;
+  }
+  .nav nav a {
+    padding: 0.75rem 0.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 1rem;
+  }
+  .nav nav a.active {
+    border-bottom-color: var(--sky);
+  }
+  .nav .sbox {
+    width: 100%;
+  }
+  .nav .sbox input {
+    width: 100%;
+    flex: 1;
+  }
+  .nav .role {
+    display: inline-block;
+    align-self: flex-start;
+  }
+  .menu .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+@media (max-width: 860px) {
+  .hero {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    gap: 1.5rem;
+  }
+  .dash-h {
+    flex-wrap: wrap;
+  }
+}
+/* гар утас */
+@media (max-width: 700px) {
+  .wrap {
+    padding: 0 1rem;
+  }
+  h2 {
+    margin: 2rem 0 0.8rem;
+  }
+  .pagehead {
+    padding: 1.5rem 0 1rem;
+  }
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats b {
+    font-size: 1.6rem;
+  }
+  .two {
+    grid-template-columns: 1fr;
+  }
+  .head {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .chips .sbox {
+    min-width: 100%;
+  }
+  .grid4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .tcard {
+    padding: 0.8rem;
+  }
+  .tcard h3 {
+    font-size: 1rem;
+  }
+  .tcard .xthumb {
+    width: 80%;
+  }
+  .gal {
+    columns: 2;
+  }
+  .rows div {
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .rows dd {
+    text-align: left;
+  }
+  .lead {
+    font-size: 1rem;
+  }
+  .letter {
+    padding: 1.2rem;
+  }
+  .tline {
+    padding-left: 1.4rem;
+  }
+  .tline .dot {
+    left: calc(-1.4rem - 10px);
+  }
+  .tl-strip a {
+    flex-basis: 150px;
+  }
+  .item {
+    flex-wrap: wrap;
+  }
+  .item > div {
+    flex: 1 1 calc(100% - 120px);
+    min-width: 0;
+  }
+  .split {
+    min-height: 0;
+  }
+  .split .pic {
+    min-height: 180px;
+    padding: 1.5rem;
+  }
+  .split .pic h2 {
+    font-size: 1.2rem;
+  }
+  .split form {
+    padding: 1.5rem;
+  }
+  .panel {
+    padding: 1.1rem;
+  }
+  .cnav {
+    width: 34px;
+    height: 34px;
+    font-size: 1.3rem;
+  }
+  .foot .wrap {
+    flex-direction: column;
+  }
+}
+@media (max-width: 420px) {
+  .gal {
+    columns: 1;
+  }
+  .hero .row .btn {
+    width: 100%;
+    text-align: center;
+  }
 }

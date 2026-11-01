@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Routes,
   Route,
@@ -38,12 +38,15 @@ export default function App() {
   const nav = useNavigate()
   const { pathname } = useLocation()
   const [q, setQ] = useState('')
+  const [open, setOpen] = useState(false)
+  useEffect(() => setOpen(false), [pathname])
   const logout = async () => {
     await supabase.auth.signOut()
     nav('/')
   }
   const search = (e) => {
     e.preventDefault()
+    setOpen(false)
     nav(`/exhibits?q=${encodeURIComponent(q)}`)
   }
 
@@ -54,35 +57,46 @@ export default function App() {
           <Link to="/" className="brand">
             ISM<i>.</i>MUSEUM
           </Link>
-          <nav>
-            <NavLink to="/exhibits">Үзэсгэлэн</NavLink>
-            <NavLink to="/capsule">Time Capsule</NavLink>
-            <NavLink to="/timeline">Time Machine</NavLink>
-            <NavLink to="/teachers">Багш нар</NavLink>
-            <NavLink to="/events">Арга хэмжээ</NavLink>
-            <NavLink to="/my">Миний бүтээл</NavLink>
-          </nav>
-          <form className="sbox" onSubmit={search} role="search">
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Хайх"
-              aria-label="Үзмэр хайх"
-            />
-            <button aria-label="Хайх">⌕</button>
-          </form>
-          {user && (
-            <span className="role">{isAdmin ? 'Админ' : 'Бүтээгч'}</span>
-          )}
-          {user ? (
-            <button className="btn" onClick={logout}>
-              Гарах
-            </button>
-          ) : (
-            <Link className="btn" to="/login">
-              Нэвтрэх
-            </Link>
-          )}
+          <button
+            className="burger"
+            aria-label="Цэс"
+            aria-expanded={open}
+            aria-controls="menu"
+            onClick={() => setOpen((o) => !o)}
+          >
+            {open ? '✕' : '☰'}
+          </button>
+          <div id="menu" className={`menu ${open ? 'open' : ''}`}>
+            <nav>
+              <NavLink to="/exhibits">Үзэсгэлэн</NavLink>
+              <NavLink to="/capsule">Time Capsule</NavLink>
+              <NavLink to="/timeline">Time Machine</NavLink>
+              <NavLink to="/teachers">Багш нар</NavLink>
+              <NavLink to="/events">Арга хэмжээ</NavLink>
+              <NavLink to="/my">Миний бүтээл</NavLink>
+            </nav>
+            <form className="sbox" onSubmit={search} role="search">
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Үзмэр хайх.."
+                aria-label="Үзмэр хайх"
+              />
+              <button aria-label="Хайх">⌕</button>
+            </form>
+            {user && (
+              <span className="role">{isAdmin ? 'Админ' : 'Бүтээгч'}</span>
+            )}
+            {user ? (
+              <button className="btn" onClick={logout}>
+                Гарах
+              </button>
+            ) : (
+              <Link className="btn" to="/login">
+                Нэвтрэх
+              </Link>
+            )}
+          </div>
         </div>
       </header>
       <main className={pathname === '/login' ? '' : 'wrap'}>
