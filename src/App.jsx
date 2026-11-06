@@ -17,6 +17,7 @@ import Dashboard from './pages/Dashboard.jsx'
 import Capsule from './pages/Capsule.jsx'
 import CapsuleDetail from './pages/CapsuleDetail.jsx'
 import Teachers from './pages/Teachers.jsx'
+import TeacherDetail from './pages/TeacherDetail.jsx'
 import Events from './pages/Events.jsx'
 import EventDetail from './pages/EventDetail.jsx'
 import Timeline from './pages/Timeline.jsx'
@@ -79,7 +80,7 @@ export default function App() {
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Хайх"
+                placeholder="Үзмэр хайх.."
                 aria-label="Үзмэр хайх"
               />
               <button aria-label="Хайх">⌕</button>
@@ -115,6 +116,7 @@ export default function App() {
           <Route path="/capsule" element={<Capsule />} />
           <Route path="/capsule/:kind/:id" element={<CapsuleDetail />} />
           <Route path="/teachers" element={<Teachers />} />
+          <Route path="/teachers/:id" element={<TeacherDetail />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/timeline" element={<Timeline />} />

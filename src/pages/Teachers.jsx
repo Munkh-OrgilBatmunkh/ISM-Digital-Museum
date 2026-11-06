@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth.jsx'
 import useLoad from '../lib/useLoad'
@@ -13,6 +14,7 @@ const RANKS = [
   'Багш',
   'Туслах багш',
 ]
+const EDU = ['Бакалавр', 'Магистр', 'Доктор (PhD)']
 const FIELDS = [
   { key: 'name', label: 'Нэр', required: true },
   {
@@ -21,6 +23,19 @@ const FIELDS = [
     list: RANKS,
     required: true,
   },
+  {
+    key: 'education',
+    label: 'Боловсролын түвшин (жишээ: Магистр, Доктор)',
+    list: EDU,
+  },
+  {
+    key: 'courses',
+    label: 'Заадаг хичээлүүд (таслалаар тусгаарлана)',
+    type: 'textarea',
+    rows: 3,
+  },
+  { key: 'email', label: 'И-мэйл', type: 'email' },
+  { key: 'room', label: 'Өрөөний дугаар' },
   { key: 'photo_url', label: 'Зураг', type: 'image' },
 ]
 
@@ -43,7 +58,8 @@ export default function Teachers() {
         <p className="eyebrow">Бидний бахархал</p>
         <h1>Тэнхимийн багш нар</h1>
         <p className="muted">
-          Манай тэнхимд хичээл заадаг багш нартай танилцаарай.
+          Мэдээллийн системийн менежментийн тэнхимийн багш нартай танилцаарай.
+          Багшийг дарж дэлгэрэнгүйг үзээрэй.
         </p>
         {isAdmin && (
           <button className="btn" onClick={() => setEdit({})}>
@@ -66,22 +82,25 @@ export default function Teachers() {
       <div className="grid4">
         {s.data?.map((t) => (
           <div className="tcard" key={t.id}>
-            <div className="xthumb">
-              {t.photo_url ? (
-                <img src={t.photo_url} alt={t.name} loading="lazy" />
-              ) : (
-                <div className="ph">
-                  {t.name
-                    .split(/[ .]+/)
-                    .filter(Boolean)
-                    .map((w) => w[0])
-                    .join('')
-                    .slice(0, 2)}
-                </div>
-              )}
-            </div>
-            <h3>{t.name}</h3>
-            <p className="rank">{t.position}</p>
+            <Link to={`/teachers/${t.id}`} className="tlink">
+              <div className="xthumb">
+                {t.photo_url ? (
+                  <img src={t.photo_url} alt={t.name} loading="lazy" />
+                ) : (
+                  <div className="ph">
+                    {t.name
+                      .split(/[ .]+/)
+                      .filter(Boolean)
+                      .map((w) => w[0])
+                      .join('')
+                      .slice(0, 2)}
+                  </div>
+                )}
+              </div>
+              <h3>{t.name}</h3>
+              <p className="rank">{t.position}</p>
+              <span className="more">Дэлгэрэнгүй →</span>
+            </Link>
             {isAdmin && (
               <AdminBar
                 onEdit={() => setEdit(t)}

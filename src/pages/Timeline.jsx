@@ -5,6 +5,7 @@ import useLoad from '../lib/useLoad'
 import Status from '../components/Status.jsx'
 import EntityForm from '../components/EntityForm.jsx'
 import { AdminBar, duplicateRow, deleteRow } from '../components/AdminTools.jsx'
+import { DeptHero, Overview, Contact } from '../components/DepartmentInfo.jsx'
 
 const FIELDS = [
   { key: 'year', label: 'Он', type: 'number', required: true },
@@ -13,6 +14,7 @@ const FIELDS = [
   { key: 'image_url', label: 'Зураг (заавал биш)', type: 'image' },
 ]
 
+// ISM Time Machine: тэнхимийн түүхийн үйл явдлуудыг он цагийн дарааллаар харуулна
 export default function Timeline() {
   const { isAdmin } = useAuth()
   const [n, setN] = useState(0)
@@ -33,13 +35,17 @@ export default function Timeline() {
 
   return (
     <>
-      <div className="pagehead">
-        <p className="eyebrow">ISM Time Machine</p>
-        <h1>Тэнхимийн түүх</h1>
-        <p className="muted">
-          Тэнхимийн чухал үйл явдлуудыг он цагийн дарааллаар доош гүйлгэн
-          үзээрэй.
-        </p>
+      <DeptHero />
+      <Overview />
+      <div className="head" style={{ marginTop: '3rem' }}>
+        <div>
+          <p className="eyebrow">ISM Time Machine</p>
+          <h2 style={{ margin: 0 }}>Тэнхимийн түүх</h2>
+          <p className="muted" style={{ margin: '.4rem 0 0' }}>
+            Тэнхимийн чухал үйл явдлуудыг он цагийн дарааллаар доош гүйлгэн
+            үзээрэй.
+          </p>
+        </div>
         {isAdmin && (
           <button className="btn" onClick={() => setEdit({})}>
             + Үйл явдал нэмэх
@@ -89,6 +95,7 @@ export default function Timeline() {
           </li>
         ))}
       </ol>
+      <Contact />
     </>
   )
 }

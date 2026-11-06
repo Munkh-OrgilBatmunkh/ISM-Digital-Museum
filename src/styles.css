@@ -1129,3 +1129,215 @@ img {
     text-align: center;
   }
 }
+
+/* Багшийн дэлгэрэнгүй */
+.tlink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.tlink:hover h3 {
+  color: var(--blue);
+}
+.tlink .more {
+  color: var(--blue);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.tdetail {
+  margin-top: 1.5rem;
+}
+@media (min-width: 900px) {
+  .tdetail {
+    grid-template-columns: minmax(0, 520px) 1fr;
+  }
+}
+.pframe {
+  display: grid;
+  place-items: start center;
+  align-self: start;
+}
+.pframe img {
+  max-width: 100%;
+  max-height: min(680px, 80vh);
+  object-fit: contain;
+  border-radius: 12px;
+  display: block;
+  box-shadow: 0 8px 24px rgba(12, 31, 74, 0.12);
+}
+.pframe .ph {
+  width: 100%;
+  aspect-ratio: 1;
+  font-size: 4rem;
+  border-radius: 12px;
+  background: #eceff4;
+  color: var(--muted);
+}
+.rows dd a {
+  color: var(--blue);
+  text-decoration: none;
+  word-break: break-all;
+}
+.lessons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.lessons li {
+  background: var(--soft);
+  color: var(--blue-d);
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+}
+
+/* Time Machine: тэнхимийн зураг ба мэдээлэл */
+.dhero {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  min-height: clamp(260px, 38vw, 440px);
+  display: flex;
+  align-items: flex-end;
+  color: #fff;
+  background-color: var(--navy);
+  background-size: cover;
+  background-position: center;
+}
+.dhero .in {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
+}
+.dhero .eyebrow {
+  color: var(--sky);
+  margin-bottom: 0.6rem;
+}
+.dhero h1 {
+  color: #fff;
+  font-size: clamp(1.8rem, 5vw, 3.4rem);
+  max-width: 16em;
+  text-wrap: balance;
+}
+.about {
+  margin-top: 2.5rem;
+}
+.mv {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+}
+.mcard {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--blue);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+.mtext {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.motto {
+  background: var(--navy);
+  color: #fff;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  margin: 1.2rem 0 0;
+  text-align: center;
+}
+.motto small {
+  color: var(--sky);
+  font-weight: 600;
+}
+.motto p {
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.progs {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+}
+.prog {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: var(--soft);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 1.2rem;
+  color: inherit;
+  text-decoration: none;
+}
+a.prog {
+  transition:
+    border-color 0.15s,
+    transform 0.15s;
+}
+a.prog:hover {
+  border-color: var(--blue);
+  transform: translateY(-2px);
+}
+.prog .lvl {
+  align-self: flex-start;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.1rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.prog b {
+  line-height: 1.4;
+}
+.prog .go {
+  margin-top: auto;
+  color: var(--blue);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.research {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
+  counter-reset: r;
+}
+.research li {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+}
+.research li::before {
+  counter-increment: r;
+  content: counter(r, decimal-leading-zero);
+  color: var(--blue);
+  font-weight: 700;
+  min-width: 2rem;
+}
+.contact {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+@media (max-width: 700px) {
+  .motto {
+    padding: 1.5rem 1rem;
+  }
+  .mcard {
+    padding: 1.2rem;
+  }
+}

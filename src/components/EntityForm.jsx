@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { supabase, BUCKET } from '../lib/supabase'
 import { useAuth } from '../lib/auth.jsx'
 
+// Нэг маягт — багш, арга хэмжээ, он цагийн үйл явдал, зураг бүгдэд ашиглагдана.
+// fields: [{ key, label, type: text|textarea|date|number|image, required, list }]
 export default function EntityForm({
   table,
   title,
@@ -97,7 +99,7 @@ export default function EntityForm({
             ) : (
               <input
                 type={
-                  f.type === 'number' || f.type === 'date' ? f.type : 'text'
+                  ['number', 'date', 'email'].includes(f.type) ? f.type : 'text'
                 }
                 list={f.list ? `dl-${f.key}` : undefined}
                 maxLength={f.max}
