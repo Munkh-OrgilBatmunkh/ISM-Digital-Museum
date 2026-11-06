@@ -1,4 +1,4 @@
-import { DEPT } from '../data/department'
+import { DEPT } from '../data/Department'
 import { HERO_ART } from '../data/heroArt'
 
 export function DeptHero() {
