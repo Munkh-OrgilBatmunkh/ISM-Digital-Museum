@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import useLoad from '../lib/useLoad'
+import { supabase } from '../lib/supabase.js'
+import useLoad from '../lib/useLoad.js'
 import Status from '../components/Status.jsx'
 
 const initials = (name) =>
